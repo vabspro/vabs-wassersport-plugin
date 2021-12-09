@@ -1,0 +1,18 @@
+.participantlist
+    position: relative
+    padding: 1rem
+    &__form
+        position: relative
+        margin-bottom: 2.4rem
+
+        &--grid
+            display: grid
+            grid-template-columns: repeat(2, 1fr)
+            grid-column-gap: .2rem
+            grid-row-gap: .2rem
+
+            label
+                input
+                    @extend .input
+                    display: block
+                    width: 100%

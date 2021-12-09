@@ -1,0 +1,64 @@
+.voucherform
+    position: relative
+    padding: 1rem
+    *
+        box-sizin: border-box
+
+
+    &__field
+        margin-bottom: 2.4rem
+        input
+            @extend .input
+
+        ul
+            list-style: none
+            padding: 0
+            margin: 0
+            display: grid
+            grid-template-columns: repeat(auto-fill, minmax(80px, 160px))
+            grid-column-gap: .4rem
+            grid-row-gap: .4rem
+
+                
+            li
+                height: 64px
+                width: 100%
+                display: flex
+                align-items: center
+                justify-content: center
+                border-radius: .2rem
+                border: 2px solid rgba(57, 65, 77, 1)
+                color: rgba(0,0,0, 1)
+                cursor: pointer
+                opacity: .4
+                small
+                    display: block
+                    line-height: 1
+                    text-align: center
+
+                strong
+                    display: block
+                    line-height: 1
+                    text-align: center
+                &.active
+                    opacity: 1
+
+            &.voucherform__field--template
+                grid-template-columns: repeat(auto-fill, minmax(80px, 120px))
+                @media screen and ( max-width: 420px )
+                    grid-template-columns: repeat(3, 1fr)
+                li
+                    height: 80px
+                    width: 100%
+                    display: block
+                    background-size: cover
+                    background-position: center
+                    background-repeat: no-repeat
+                    border-radius: .2rem
+                    border: 2px solid transparent
+                    &.active
+                        border: 2px solid rgba(57, 65, 77, 1)
+
+                    
+
+

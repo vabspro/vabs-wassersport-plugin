@@ -1,0 +1,52 @@
+.coursepicker
+    position: relative
+    padding: 1rem
+    ul
+        padding: 0
+        margin: 0
+        list-style: none
+
+
+    &__item
+        position: relative
+        margin-bottom: 1rem
+        border: 3px solid rgba($primary, .2)
+        padding: 1rem
+
+        &.checked
+            border: 3px solid $primary
+        &--body
+            display: flex
+            flex: 1
+            flex-direction: row
+            align-items: center
+
+        &--checkbox
+            margin-right: 1rem
+
+        &--description
+            flex: 1
+            h4
+                font-size: 1rem
+                display: flex
+                justify-content: space-between
+                align-items: center
+                margin-bottom: .6rem
+            p
+                font-size: 1rem
+
+        &--meta
+            position: relative
+            display: grid
+            grid-template-columns: repeat(2, 1fr)
+
+            &-input
+                display: flex
+                align-items: center
+                justify-content: flex-start
+                label
+                    font-size: 1rem
+                    margin: 0 .4rem 0 0
+                input
+                    @extend .input
+                    width: 60px
