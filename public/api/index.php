@@ -315,6 +315,7 @@ class VABSWassersportEndpoints
                 'quantity_to_book' => 1,
                 'date_from' => $start,
                 'date_to' => $end,
+                'discount' => isset($request->discount) ? $request->discount : null,
                 'ship_to_contact' => isset($request->ship_to_contact_id) ? $request->ship_to_contact_id : null,
                 'voucher_template_id' => isset($request->voucher_template_id) ? $request->voucher_template_id : null
             ];
