@@ -24,6 +24,7 @@ function FormControls({ agbLink, datenschutzLink, redirectLink }) {
 		recipient,
 		type,
 		setSuccess,
+		participants,
 	} = useContext(Context);
 
 	const { links, redirect } = globalSettings;
@@ -45,6 +46,7 @@ function FormControls({ agbLink, datenschutzLink, redirectLink }) {
 			recipient,
 			setSuccess,
 			type,
+			participants,
 		});
 	};
 

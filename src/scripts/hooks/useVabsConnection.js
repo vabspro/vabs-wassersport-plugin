@@ -55,8 +55,6 @@ export const useVabsConnection = async ({
 	contact,
 	startDate,
 	endDate,
-	startTime,
-	endTime,
 	selectedCourses,
 	setLoading,
 	redirect,
@@ -64,6 +62,7 @@ export const useVabsConnection = async ({
 	recipient,
 	setSuccess,
 	type,
+	participants,
 }) => {
 	setLoading(true);
 	/**
@@ -79,6 +78,7 @@ export const useVabsConnection = async ({
 		mobile: contact.mobile,
 		message: contact.message,
 		note: contact.message,
+		lead: true,
 	};
 	const { contact_id } = await createContactId(contactPayload);
 	console.log({ contact_id });
@@ -105,7 +105,7 @@ export const useVabsConnection = async ({
 		}
 		return;
 	}
-
+	//const assignedInterestToContact = await assignInterestToContact(contact_id);
 	/**
 	 * create sales header
 	 */
@@ -138,6 +138,7 @@ export const useVabsConnection = async ({
 			lastName: recipient.split(" ")[1] ? recipient.split(" ")[1] : recipient.split(" ")[0],
 			email: "xxx@xxx.xx",
 			mobile: "00000000",
+			shorttext: "Interesse: Gutschein",
 		};
 		const { contact_id: ship_to_contact_id } = await createContactId(shipToPayload);
 		if (!ship_to_contact_id) {
@@ -204,63 +205,67 @@ export const useVabsConnection = async ({
 			return;
 		}
 	} else {
-		const salesHeaderLines = [];
-		for (const course of selectedCourses) {
-			const salesHeaderLine = await createSalesHeaderLine({
-				id: course.id,
-				salesHeaderId: salesHeaderID,
-				object_code: 3,
-				startDate,
-				endDate: endDate ? endDate : startDate,
-				startTime,
-				endTime,
+		/**
+		 * create sales line for each selected course
+		 */
+
+		const salesLines = await Promise.all(
+			participants.map(async (p) => {
+				const courseID = p.courseID;
+
+				if (p.firstName !== "") {
+					const { contact_id: ship_to_contact_id } = await createContactId({
+						firstName: p.firstName,
+						lastName: p.lastName,
+						email: p.email ? p.email : "xxx@xxx.xx",
+						mobile: p.mobile ? p.mobile : "00000000",
+						lead: null,
+					});
+					const { sales_line_id } = await createSalesHeaderLine({
+						id: courseID,
+						salesHeaderId: salesHeaderID,
+						ship_to_contact_id: ship_to_contact_id,
+						object_code: 3,
+						startDate,
+						endDate,
+					});
+					return sales_line_id;
+				} else {
+					const { sales_line_id } = await createSalesHeaderLine({
+						id: courseID,
+						salesHeaderId: salesHeaderID,
+						ship_to_contact_id: contact_id,
+						object_code: 3,
+						startDate,
+						endDate,
+					});
+
+					return sales_line_id;
+				}
+			})
+		)
+			.then(() => {
+				setLoading(false);
+				setSuccess(true);
+				if (redirect && redirect !== "") {
+					window.location = redirect;
+				} else {
+					window.alert("Vielen Dank für deine Buchung, diese ist erfolgreich bei uns eingegangen.");
+					window.location = window.location.origin;
+				}
+				return;
+			})
+			.catch((err) => {
+				useErrorHandler({
+					message: "sales_lines could not be created",
+					payload: { error: err, participants, selectedCourses, salesHeaderID },
+					action: "createSalesLineID, useVabsConnection.js line: 223",
+				});
+				setLoading(false);
+				window.alert(
+					"Uppps, da ist etwas schief gelaufen. Zur Zeit ist unser Server nicht erreichbar, bitte versuche es zu einem späteren Zeitpunkt erneut. Vielen Dank für dein Verständnis."
+				);
+				return;
 			});
-
-			salesHeaderLines.push(salesHeaderLine);
-		}
-
-		if (!salesHeaderLines.length) {
-			useErrorHandler({
-				message: "sales_header_line could not be created",
-				payload: {
-					salesHeaderId: salesHeaderID,
-					startDate,
-					endDate: endDate ? endDate : startDate,
-					startTime,
-					endTime,
-				},
-				action: "createSalesHeaderLine",
-			});
-			setLoading(false);
-			window.alert(
-				"Uppps, da ist etwas schief gelaufen. Zur Zeit ist unser Server nicht erreichbar, bitte versuche es zu einem späteren Zeitpunkt erneut. Vielen Dank für dein Verständnis."
-			);
-			return;
-		}
-
-		const salesInvoice = await createSalesInvoice(salesHeaderID);
-
-		if (!salesInvoice) {
-			useErrorHandler({
-				message: "sales_invoice could not be created",
-				payload: { salesHeaderID },
-				action: "createSalesInvoice for recipient, useVabsConnection.js line: 233",
-			});
-			setLoading(false);
-			window.alert(
-				"Uppps, da ist etwas schief gelaufen. Zur Zeit ist unser Server nicht erreichbar, bitte versuche es zu einem späteren Zeitpunkt erneut. Vielen Dank für dein Verständnis."
-			);
-			return;
-		} else {
-			setLoading(false);
-			setSuccess(true);
-			if (redirect && redirect !== "") {
-				window.location = redirect;
-			} else {
-				window.alert("Vielen Dank für deine Buchung, diese ist erfolgreich bei uns eingegangen.");
-				window.location = window.location.origin;
-			}
-			return;
-		}
 	}
 };

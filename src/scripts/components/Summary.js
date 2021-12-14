@@ -77,9 +77,7 @@ function Summary({ agbLink, datenschutzLink }) {
 										<h3>{course.name}</h3>
 										<span>
 											<strong>Teilnehmer:</strong>
-											{participants.length
-												? participants.map((p) => `${p.firstName}`).join(", ")
-												: course.amount}
+											{course.amount}
 										</span>
 										<span>
 											<strong>Anzahl:</strong> {course.quantity}

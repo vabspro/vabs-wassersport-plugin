@@ -31,6 +31,7 @@ export const useParticipants = ({ selectedCourses }) => {
 						mobile: "",
 						yearOfBirth: "",
 						course: course.name,
+						courseID: course.id,
 					});
 
 					counter++;

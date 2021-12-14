@@ -77,7 +77,7 @@ class VABSWassersportEndpoints
         $this->logger->pushHandler(new StreamHandler(VABS_PLUGIN_WASSERSPORT_ROOTPATH . '/logs/' . date("Y-m-d_h:i:sa") . '.log', Logger::DEBUG));
         $this->logger->info('A warning message', ['request' => $payload]);
 
-        mail('uwe@vabs.pro', $request->message . ' in ' . $request->type, $payload);
+        //mail('uwe@vabs.pro', $request->message . ' in ' . $request->type, $payload);
     }
 
     public function get_config_data()
@@ -227,8 +227,8 @@ class VABSWassersportEndpoints
                 'city' => $request->city,
                 'email' => isset($request->email) && $request->email !== '' ? $request->email : 'xxx@xxx.xx',
                 'mobile' => isset($request->mobile) && $request->mobile !== '' ? $request->mobile : '00000000',
-                'create_lead' => true,
-                'shorttext' => 'Interesse: Wassersport',
+                'create_lead' => isset($request->lead) && $request->lead !== '' ? $request->lead : false,
+                'shorttext' => isset($request->shorttext) && $request->leashorttextd !== '' ? $request->shorttext : '',
                 'longtext' => isset($request->message) ? $request->message : '',
                 'send_email_request' => 'yes',
             ];
