@@ -8,7 +8,7 @@ import { useParticipants } from "../hooks/useParticipants";
 
 export const Context = createContext();
 
-export const ContextProvider = ({ children, type, form }) => {
+export const ContextProvider = ({ children, form: type }) => {
 	const {
 		loading,
 		setLoading,
@@ -30,7 +30,7 @@ export const ContextProvider = ({ children, type, form }) => {
 	const { participants, updateParticipant } = useParticipants({ selectedCourses });
 
 	const { list, templates, voucher, setVoucher, recipient, setRecipient } = useVoucher({
-		shouldFetch: form === "voucher",
+		shouldFetch: type === "voucher",
 		callback: () => setLoading(false),
 	});
 
@@ -51,7 +51,7 @@ export const ContextProvider = ({ children, type, form }) => {
 				setVoucher,
 				recipient,
 				setRecipient,
-				type: form === "voucher" ? "voucher" : type,
+				type,
 				selectedCourses,
 				addSelectedCourse,
 				removeSelectedCourse,

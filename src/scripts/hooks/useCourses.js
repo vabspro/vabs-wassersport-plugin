@@ -59,7 +59,9 @@ export const useCourses = ({ shouldFetch, querytype, query }) => {
 				case "coursegroup":
 					fetchAllCoursesByGroupId();
 					break;
-
+				case "group":
+					fetchAllCoursesByGroupId();
+					break;
 				default:
 					fetchAllCourses();
 					break;

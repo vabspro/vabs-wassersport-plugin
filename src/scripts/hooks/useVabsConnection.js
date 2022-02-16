@@ -1,10 +1,21 @@
 import { fetchDataAsync } from "../utils/fetchDataAsync";
 import { useErrorHandler } from "./useErrorHandler";
 
-const createContactId = async ({ firstName, lastName, street, zipCode, city, email, mobile, message }) => {
+const createContactId = async ({ firstName, lastName, street, zipCode, city, email, mobile, message, lead, type }) => {
 	return await fetchDataAsync({
 		action: "/create_contact_id",
-		data: { firstName, lastName, street, zipCode, city, email, mobile, message },
+		data: {
+			firstName,
+			lastName,
+			street,
+			zipCode,
+			city,
+			email,
+			mobile,
+			message,
+			lead,
+			shorttext: type == "contact" ? "Anfrageformular" : null,
+		},
 	});
 };
 
@@ -79,6 +90,7 @@ export const useVabsConnection = async ({
 		message: contact.message,
 		note: contact.message,
 		lead: true,
+		type,
 	};
 	const { contact_id } = await createContactId(contactPayload);
 	console.log({ contact_id });
