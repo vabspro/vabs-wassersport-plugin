@@ -24,11 +24,12 @@ const errorMessages = {
 	mobile: "Deine Telefonnummer ist ein Pflichtfeld.",
 	startDate: "Mindestens ein zu buchender Tag ist pflicht.",
 	endDate: "Mindestens ein zu buchender Tag ist pflicht.",
-	selectedRentals: "Um einen Strandkorb buchen zu können, müssen Sie mindestens einen Strandkorb auswählen.",
+	selectedCourses: "Um einen Kurs buchen zu können, müssen Sie mindestens einen Kurs auswählen.",
 	accepted: "Bitte bestätige das du unsere AGB und Datenschutzrichtlinien gelesen und verstanden hast.",
 };
 
-export const useFormValidator = ({ contact, selectedRentals, startDate, setErrors, voucher, recipient, type }) => {
+export const useFormValidator = ({ contact, selectedCourses, startDate, setErrors, voucher, recipient, type }) => {
+	console.log({ type, selectedCourses });
 	const errors = {};
 
 	Object.keys(contact).forEach((key) => {
@@ -40,8 +41,8 @@ export const useFormValidator = ({ contact, selectedRentals, startDate, setError
 	});
 
 	if (type === "booking") {
-		if (!selectedRentals.length) {
-			errors["selectedRentals"] = errorMessages["selectedRentals"];
+		if (!selectedCourses.length) {
+			errors["selectedCourses"] = errorMessages["selectedCourses"];
 		}
 
 		if (!startDate) {

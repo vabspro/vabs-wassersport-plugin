@@ -228,7 +228,7 @@ class VABSWassersportEndpoints
                 'email' => isset($request->email) && $request->email !== '' ? $request->email : 'xxx@xxx.xx',
                 'mobile' => isset($request->mobile) && $request->mobile !== '' ? $request->mobile : '00000000',
                 'create_lead' => isset($request->lead) && $request->lead !== '' ? $request->lead : false,
-                'shorttext' => isset($request->shorttext) && $request->shorttext !== '' ? $request->shorttext : '',
+                'shorttext' => isset($request->note) && $request->note !== '' ? $request->note : 'Anfrage',
                 'longtext' => isset($request->message) ? $request->message : '',
                 'send_email_request' => 'yes',
             ];
