@@ -29,7 +29,6 @@ const errorMessages = {
 };
 
 export const useFormValidator = ({ contact, selectedCourses, startDate, setErrors, voucher, recipient, type }) => {
-	console.log({ type, selectedCourses });
 	const errors = {};
 
 	Object.keys(contact).forEach((key) => {
@@ -44,7 +43,6 @@ export const useFormValidator = ({ contact, selectedCourses, startDate, setError
 		if (!selectedCourses.length) {
 			errors["selectedCourses"] = errorMessages["selectedCourses"];
 		}
-
 		if (!startDate) {
 			errors["startDate"] = errorMessages["startDate"];
 		}

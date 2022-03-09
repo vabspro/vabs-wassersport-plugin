@@ -1,13 +1,11 @@
 import React, { useContext } from "react";
 import ActivityIndicator from "../components/ActivityIndicator";
 import SuccessMessage from "../components/SuccessMessage";
-import ErrorMessage from "../components/ErrorMessage";
 import BillingDetails from "../components/BillingDetails";
 import Summary from "../components/Summary";
 import FormControls from "../components/FormControls";
 import { Context } from "../context/index";
 import VoucherForm from "../modules/VoucherForm";
-import { useContainerSize } from "../hooks/useContainerSize";
 import CoursePicker from "../components/CoursePicker";
 import RangePicker from "../components/RangePicker";
 import ParticipantList from "../components/ParticipantList";
@@ -18,7 +16,7 @@ import BookingFormAside from "../components/BookingFormAside";
 import BookingFormSlider from "../components/BookingFormSlider";
 
 function App({ form: type, type: querytype, query, redirect, agb, datenschutz }) {
-	const { loading, success, currentIndex } = useContext(Context);
+	const { loading, success } = useContext(Context);
 
 	let render = (
 		<div className="bookingform">
@@ -26,46 +24,61 @@ function App({ form: type, type: querytype, query, redirect, agb, datenschutz })
 			<BookingFormSlider>
 				<BookingFormWrapper>
 					<BookingFormSection>
-						<BookingFormHeader
-							title="1. Reisezeitraum"
-							description="Um dir die bestmöglich Windausbeute garantieren zu können, benötigen wir noch deinen Urlaubszeitraum."
-						/>
-						<RangePicker />
+						<ErrorBoundary>
+							<BookingFormHeader
+								title="1. Reisezeitraum"
+								description="Um dir die bestmöglich Windausbeute garantieren zu können, benötigen wir noch deinen Urlaubszeitraum."
+							/>
+							<RangePicker />
+						</ErrorBoundary>
 					</BookingFormSection>
 
 					<BookingFormSection>
-						<BookingFormHeader title="2. Kursauswahl" description="welchen Kurs möchtest du besuchen?" />
-						<CoursePicker querytype={querytype} query={query} />
+						<ErrorBoundary>
+							<BookingFormHeader
+								title="2. Kursauswahl"
+								description="welchen Kurs möchtest du besuchen?"
+							/>
+							<CoursePicker querytype={querytype} query={query} />
+						</ErrorBoundary>
 					</BookingFormSection>
 
 					<BookingFormSection>
-						<BookingFormHeader
-							title="3. Teilnehmer"
-							description="Füge deiner Kursauswahl Teilnehmer hinzu."
-						/>
-						<ParticipantList />
+						<ErrorBoundary>
+							<BookingFormHeader
+								title="3. Teilnehmer"
+								description="Füge deiner Kursauswahl Teilnehmer hinzu."
+							/>
+							<ParticipantList />
+						</ErrorBoundary>
 					</BookingFormSection>
 
 					<BookingFormSection>
-						<BookingFormHeader
-							title="4. Rechnungsdetails"
-							description="Trage hier die Angaben des Rechnungsempfängers ein."
-						/>
-						<BillingDetails />
+						<ErrorBoundary>
+							<BookingFormHeader
+								title="4. Rechnungsdetails"
+								description="Trage hier die Angaben des Rechnungsempfängers ein."
+							/>
+							<BillingDetails />
+						</ErrorBoundary>
 					</BookingFormSection>
 
 					<BookingFormSection>
-						<BookingFormHeader
-							title="5. Zusammenfassung"
-							description="Überprüfe deine Daten, bevor du deine Buchung absendest"
-						/>
-						<Summary agbLink={agb} datenschutzLink={datenschutz} />
+						<ErrorBoundary>
+							<BookingFormHeader
+								title="5. Zusammenfassung"
+								description="Überprüfe deine Daten, bevor du deine Buchung absendest"
+							/>
+							<Summary agbLink={agb} datenschutzLink={datenschutz} />
+						</ErrorBoundary>
 					</BookingFormSection>
 				</BookingFormWrapper>
 			</BookingFormSlider>
 
 			<BookingFormAside>
-				<FormControls redirectLink={redirect} />
+				<ErrorBoundary>
+					<FormControls redirectLink={redirect} />
+				</ErrorBoundary>
 			</BookingFormAside>
 		</div>
 	);
@@ -76,18 +89,26 @@ function App({ form: type, type: querytype, query, redirect, agb, datenschutz })
 				{loading ? <ActivityIndicator /> : null}
 				<BookingFormWrapper>
 					<BookingFormSection>
-						<VoucherForm />
+						<ErrorBoundary>
+							<VoucherForm />
+						</ErrorBoundary>
 					</BookingFormSection>
 					<BookingFormSection>
-						<BillingDetails />
+						<ErrorBoundary>
+							<BillingDetails />
+						</ErrorBoundary>
 					</BookingFormSection>
 
 					<BookingFormSection>
-						<Summary />
+						<ErrorBoundary>
+							<Summary />
+						</ErrorBoundary>
 					</BookingFormSection>
 				</BookingFormWrapper>
 				<BookingFormAside>
-					<FormControls redirectLink={redirect} agbLink={agb} datenschutzLink={datenschutz} />
+					<ErrorBoundary>
+						<FormControls redirectLink={redirect} agbLink={agb} datenschutzLink={datenschutz} />
+					</ErrorBoundary>
 				</BookingFormAside>
 			</BookingFormSlider>
 		);
@@ -99,11 +120,15 @@ function App({ form: type, type: querytype, query, redirect, agb, datenschutz })
 				{loading ? <ActivityIndicator /> : null}
 				<BookingFormWrapper>
 					<BookingFormSection>
-						<BillingDetails />
+						<ErrorBoundary>
+							<BillingDetails />
+						</ErrorBoundary>
 					</BookingFormSection>
 				</BookingFormWrapper>
 				<BookingFormAside>
-					<FormControls redirectLink={redirect} agbLink={agb} datenschutzLink={datenschutz} />
+					<ErrorBoundary>
+						<FormControls redirectLink={redirect} agbLink={agb} datenschutzLink={datenschutz} />
+					</ErrorBoundary>
 				</BookingFormAside>
 			</BookingFormSlider>
 		);
