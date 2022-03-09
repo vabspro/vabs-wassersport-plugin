@@ -14,6 +14,7 @@ import { BookingFormHeader } from "../components/BookingFormHeader";
 import BookingFormWrapper from "../components/BookingFormWrapper";
 import BookingFormAside from "../components/BookingFormAside";
 import BookingFormSlider from "../components/BookingFormSlider";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 function App({ form: type, type: querytype, query, redirect, agb, datenschutz }) {
 	const { loading, success } = useContext(Context);
