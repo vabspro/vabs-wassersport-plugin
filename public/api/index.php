@@ -14,6 +14,7 @@ class VABSWassersportEndpoints
     public $token;
     public $client_id;
     public $url;
+    public $referrer;
     public $object_code = 7;
 
     public $get_courses_endpoint = '/courses/';
@@ -25,6 +26,7 @@ class VABSWassersportEndpoints
     public $get_voucher_templates_endpoint = '/voucher/templates';
 
     public $create_contact_endpoint = '/contact/';
+    public $asign_interest_endpoint = '/contact/interest/';
     public $create_sales_header_endpoint = '/sales/order/';
     public $create_sales_line_endpoint = '/sales/line/';
     public $create_sales_invoice_endpoint = '/sales/invoice/';
@@ -39,34 +41,36 @@ class VABSWassersportEndpoints
         $this->logger = new Logger('main');
         $this->config = $config;
         $this->token = $config['api_token'];
+        $this->referrer = $config['referrer'];
         $this->client_id = $config['client_id'];
         $this->url = $config['url'];
 
         add_action('rest_api_init', function () {
-            register_rest_route('app/v1', 'config', ['methods' => 'GET', 'callback' => array($this, 'get_config_data')]);
-            register_rest_route('app/v1', 'errorhandling', ['methods' => 'POST', 'callback' => array($this, 'send_error_message_to_admin')]);
-            
-            register_rest_route('app/v1', 'get_courses', ['methods' => 'GET', 'callback' => array($this, 'get_courses')]);
-            register_rest_route('app/v1', 'get_courses_of_group', ['methods' => 'GET', 'callback' => array($this, 'get_courses_of_group')]);
-            register_rest_route('app/v1', 'get_coursegroups', ['methods' => 'GET', 'callback' => array($this, 'get_coursegroups')]);
-            register_rest_route('app/v1', 'get_course_price', ['methods' => 'GET', 'callback' => array($this, 'get_course_price')]);
+            register_rest_route('app/v1', 'config', ['methods' => 'GET', 'callback' => array($this, 'get_config_data'), 'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'errorhandling', ['methods' => 'POST', 'callback' => array($this, 'send_error_message_to_admin'), 'permission_callback' => array($this, 'permission_check')]);
+                        
+            register_rest_route('app/v1', 'client_interests', ['methods' => 'GET', 'callback' => array($this, 'get_client_interests'), 'permission_callback' => array($this, 'permission_check')]);
 
-            register_rest_route('app/v1', 'voucher_list', ['methods' => 'GET', 'callback' => array($this, 'get_voucher_list')]);
-            register_rest_route('app/v1', 'voucher_template_list', ['methods' => 'GET', 'callback' => array($this, 'get_voucher_template_list')]);
+            register_rest_route('app/v1', 'get_courses', ['methods' => 'GET', 'callback' => array($this, 'get_courses'), 'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'get_courses_of_group', ['methods' => 'GET', 'callback' => array($this, 'get_courses_of_group'), 'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'get_coursegroups', ['methods' => 'GET', 'callback' => array($this, 'get_coursegroups'), 'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'get_course_price', ['methods' => 'GET', 'callback' => array($this, 'get_course_price'), 'permission_callback' => array($this, 'permission_check')]);
 
-            register_rest_route('app/v1', 'create_contact_id', ['methods' => 'POST', 'callback' => array($this, 'create_contact_id')]);
-            register_rest_route('app/v1', 'create_salesheader_id', [
-                'methods' => 'POST',
-                'callback' => array($this, 'create_salesheader_id'),
-            ]);
-            register_rest_route('app/v1', 'create_salesline_id', ['methods' => 'POST', 'callback' => array($this, 'create_salesline_id')]);
-            register_rest_route('app/v1', 'create_sales_invoice_id', [
-                'methods' => 'GET',
-                'callback' => array($this, 'create_sales_invoice_id'),
-            ]);
+            register_rest_route('app/v1', 'voucher_list', ['methods' => 'GET', 'callback' => array($this, 'get_voucher_list'), 'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'voucher_template_list', ['methods' => 'GET', 'callback' => array($this, 'get_voucher_template_list'), 'permission_callback' => array($this, 'permission_check')]);
+
+            register_rest_route('app/v1', 'create_contact_id', ['methods' => 'POST', 'callback' => array($this, 'create_contact_id'), 'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'asign_interest_id', ['methods' => 'POST', 'callback' => array($this, 'asign_interest_id'), 'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'create_salesheader_id', ['methods' => 'POST','callback' => array($this, 'create_salesheader_id'),'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'create_salesline_id', ['methods' => 'POST', 'callback' => array($this, 'create_salesline_id'), 'permission_callback' => array($this, 'permission_check')]);
+            register_rest_route('app/v1', 'create_sales_invoice_id', ['methods' => 'GET','callback' => array($this, 'create_sales_invoice_id'), 'permission_callback' => array($this, 'permission_check')]);
 
 
         });
+    }
+
+    public function permission_check () {
+        return true;
     }
 
     public function send_error_message_to_admin()
@@ -88,6 +92,37 @@ class VABSWassersportEndpoints
                 'dsgvo' => $this->config['dsgvo']
             ]
         ];
+    }
+
+    public function get_client_interests() {
+        try {
+
+            $header = [
+                'Token:' . $this->token,
+                'TargetClientHash:' . $this->client_id
+            ];
+            $curl = curl_init($this->url.'/account/interests/');
+
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_HTTPGET, 1);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+            $curl_response = curl_exec($curl);
+        
+            curl_close($curl);
+
+            return json_decode($curl_response);
+
+
+        } catch (\Throwable $th) {
+            $currentDate = date("Y-m-d_h:i:sa");
+
+            $this->logger->pushHandler(new StreamHandler(VABS_PLUGIN_WASSERSPORT_ROOTPATH . '/logs/' . $currentDate . '.log', Logger::DEBUG));
+            $this->logger->info('A error message', ['error' => $th]);
+
+            mail('uwe@vabs.pro', $currentDate, $th);
+        }
     }
 
     public function get_courses()
@@ -231,6 +266,9 @@ class VABSWassersportEndpoints
                 'shorttext' => isset($request->note) && $request->note !== '' ? $request->note : 'Anfrage',
                 'longtext' => isset($request->message) ? $request->message : '',
                 'send_email_request' => 'yes',
+                'referrer_id' => $this->referrer,
+                'dateFrom' => isset($request->dateFrom) ? $request->dateFrom : '',
+                'dateTo' => isset($request->dateTo) ? $request->dateTo : '',
             ];
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
@@ -252,6 +290,41 @@ class VABSWassersportEndpoints
         }
         
     }
+
+
+    public function asign_interest_id () {
+        try {
+            $request = json_decode(file_get_contents('php://input'));
+    
+            $header = ['Token:' . $this->token];
+
+            $curl = curl_init($this->url . $this->asign_interest_endpoint);
+            $data = [
+                'target_client_hash' => $this->client_id,
+                'contact_id' => isset($request->contact_id) ? $request->contact_id : '',
+                'interest_id' => isset($request->interest_id) ? $request->interest_id : '',
+                
+            ];
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+            $curl_response = curl_exec($curl);
+
+            curl_close($curl);
+            return json_decode($curl_response);
+        } catch (\Throwable $th) {
+            $currentDate = date("Y-m-d_h:i:sa");
+
+            $this->logger->pushHandler(new StreamHandler(VABS_PLUGIN_WASSERSPORT_ROOTPATH . '/logs/' . $currentDate . '.log', Logger::DEBUG));
+            $this->logger->info('A error message', ['error' => $th]);
+
+            mail('uwe@vabs.pro', $currentDate, $th);
+        }
+    }
+
 
     public function create_salesheader_id()
     {

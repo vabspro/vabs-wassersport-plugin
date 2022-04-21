@@ -5,6 +5,7 @@ import { useVoucher } from "../hooks/useVoucher";
 import { useSelectedCourses } from "../hooks/useSelectedCourses";
 import { useRange } from "../hooks/useRange";
 import { useParticipants } from "../hooks/useParticipants";
+import { useInterests } from "../hooks/useInterests";
 
 export const Context = createContext();
 
@@ -23,7 +24,7 @@ export const ContextProvider = ({ children, form: type }) => {
 	} = useAppState();
 
 	const contact = useContact();
-
+	const interests = useInterests();
 	const { startDate, endDate, setStartDate, setEndDate, currentYear, setCurrentYear } = useRange();
 	const { selectedCourses, addSelectedCourse, removeSelectedCourse, updateSelectedCourse } = useSelectedCourses();
 
@@ -45,6 +46,7 @@ export const ContextProvider = ({ children, form: type }) => {
 				errors,
 				setErrors,
 				contact,
+				interests,
 				list,
 				templates,
 				voucher,

@@ -1,7 +1,20 @@
 import { fetchDataAsync } from "../utils/fetchDataAsync";
 import { useErrorHandler } from "./useErrorHandler";
 
-const createContactId = async ({ firstName, lastName, street, zipCode, city, email, mobile, message, lead, type }) => {
+const createContactId = async ({
+	firstName,
+	lastName,
+	street,
+	zipCode,
+	city,
+	email,
+	mobile,
+	message,
+	lead,
+	type,
+	dateFrom,
+	dateTo,
+}) => {
 	return await fetchDataAsync({
 		action: "/create_contact_id",
 		data: {
@@ -14,7 +27,19 @@ const createContactId = async ({ firstName, lastName, street, zipCode, city, ema
 			mobile,
 			message,
 			lead,
+			dateFrom,
+			dateTo,
 			shorttext: type == "contact" ? "Anfrageformular" : null,
+		},
+	});
+};
+
+const asignContactInterest = async ({ contact_id, interest_id }) => {
+	return await fetchDataAsync({
+		action: "/asign_interest_id",
+		data: {
+			contact_id,
+			interest_id,
 		},
 	});
 };
@@ -90,6 +115,8 @@ export const useVabsConnection = async ({
 		message: contact.message,
 		note: contact.message,
 		lead: true,
+		dateFrom: startDate,
+		dateTo: endDate,
 		type,
 	};
 	const { contact_id } = await createContactId(contactPayload);
@@ -107,6 +134,11 @@ export const useVabsConnection = async ({
 		);
 
 		return;
+	}
+
+	if (contact_id && contact.interest !== "") {
+		const { id } = await asignContactInterest({ contact_id, interest_id: contact.interest });
+		console.log(`Asigned Interest: ${id}`);
 	}
 
 	if (type === "contact") {

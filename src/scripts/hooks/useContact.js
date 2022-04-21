@@ -11,6 +11,7 @@ export const useContact = () => {
 	const [city, setCity] = useState("");
 	const [message, setMessage] = useState("");
 	const [accepted, setAccepted] = useState(false);
+	const [interest, setInterest] = useState("");
 
 	return {
 		firstName,
@@ -33,5 +34,7 @@ export const useContact = () => {
 		setMessage,
 		accepted,
 		setAccepted,
+		interest,
+		setInterest,
 	};
 };

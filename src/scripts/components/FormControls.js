@@ -5,12 +5,6 @@ import { useVabsConnection } from "../hooks/useVabsConnection";
 import ErrorMessage from "./ErrorMessage";
 
 function FormControls({ agbLink, datenschutzLink, redirectLink }) {
-	const [sections, setSections] = useState(null);
-
-	useLayoutEffect(() => {
-		setSections(document.querySelectorAll(".bookingform__section"));
-	}, []);
-
 	const {
 		errors,
 		globalSettings,
