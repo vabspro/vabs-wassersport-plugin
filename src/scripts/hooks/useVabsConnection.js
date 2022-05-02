@@ -61,13 +61,14 @@ const createSalesHeaderLine = async ({
 	ship_to_contact_id,
 	voucher_template_id,
 	object_code,
+	quantity,
 }) => {
 	return await fetchDataAsync({
 		action: "/create_salesline_id",
 		data: {
 			id,
 			salesHeaderId,
-			quantity: 1,
+			quantity: quantity ?? 1,
 			startDate,
 			endDate,
 			startTime,
@@ -254,32 +255,34 @@ export const useVabsConnection = async ({
 		 */
 
 		const salesLines = await Promise.all(
-			participants.map(async (p) => {
-				const courseID = p.courseID;
+			participants.map(async (participant) => {
+				const selectedCourse = selectedCourses.find((course) => course.id === participant.courseID);
 
-				if (p.firstName !== "") {
+				if (participant && participant.firstName !== "") {
 					const { contact_id: ship_to_contact_id } = await createContactId({
-						firstName: p.firstName,
-						lastName: p.lastName,
-						email: p.email ? p.email : "xxx@xxx.xx",
-						mobile: p.mobile ? p.mobile : "00000000",
+						firstName: participant.firstName,
+						lastName: participant.lastName,
+						email: participant.email ? participant.email : "xxx@xxx.xx",
+						mobile: participant.mobile ? participant.mobile : "00000000",
 						lead: null,
 					});
 					const { sales_line_id } = await createSalesHeaderLine({
-						id: courseID,
+						id: selectedCourse.id,
 						salesHeaderId: salesHeaderID,
 						ship_to_contact_id: ship_to_contact_id,
 						object_code: 3,
+						quantity: selectedCourse.quantity,
 						startDate,
 						endDate,
 					});
 					return sales_line_id;
 				} else {
 					const { sales_line_id } = await createSalesHeaderLine({
-						id: courseID,
+						id: selectedCourse.id,
 						salesHeaderId: salesHeaderID,
 						ship_to_contact_id: contact_id,
 						object_code: 3,
+						quantity: selectedCourse.quantity,
 						startDate,
 						endDate,
 					});
