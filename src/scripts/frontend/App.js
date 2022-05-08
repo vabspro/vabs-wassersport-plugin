@@ -134,8 +134,7 @@ function App({ form: type, type: querytype, query, redirect, agb, datenschutz })
 			</BookingFormSlider>
 		);
 	}
-
-	return success ? <SuccessMessage /> : render;
+	return success ? <SuccessMessage type={type} /> : render;
 }
 
 export default App;
