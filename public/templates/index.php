@@ -7,10 +7,10 @@ $string = json_encode($this->config);
     <div class="vabs">
         <div class="vabs__card">
             <div class="vabs__card--header">
-                <img src="<?php echo plugins_url('/vabs_strandkorb/assets/img/logo.png'); ?>" alt="logo">
+                <img src="<?php echo plugins_url('/vabs-wassersport-plugin/assets/img/logo.png'); ?>" alt="logo">
             </div>
             <div class="vabs__card--body">
-                <form action="<?php echo plugins_url('/vabs-strandkorb-plugin/public/controller/formcontroller.php'); ?>" class="form" method="POST">
+                <form action="<?php echo plugins_url('/vabs-wassersport-plugin/public/controller/formcontroller.php'); ?>" class="form" method="POST">
                     <div class="vabs__dashboard" data-type="settingsform" data-config='<?= $string ?>'></div>
                 </form>
             </div>
